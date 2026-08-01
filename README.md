@@ -1,7 +1,7 @@
 # ELEGOO Smart Robot Car V4.0 – Firmware Installation Guide
 **University Engineering Lab Setup & Deployment Manual**
 
-This repository contains the official firmware and deployment instructions for the **ELEGOO Smart Robot Car Kit V4.0** (TB6612 Motor Driver & MPU6050 Gyroscope chipset). This guide is designed to help students correctly flash the microcontroller board and troubleshoot common AVR timer conflicts during compilation.
+This repository contains the official firmware and deployment instructions for the **ELEGOO Smart Robot Car Kit V4.0** (TB6612 Motor Driver & MPU6050 Gyroscope chipset). This guide is designed to help students correctly flash the microcontroller board and ensure the correct workspace environment is configured.
 
 ---
 
@@ -41,25 +41,10 @@ This repository contains the official firmware and deployment instructions for t
 Students must navigate to the main program directory and open:
 `02 Main Program / TB6612_MPU6050 / SmartRobotCarV4.0.ino`
 
-### ⚠️ Critical Troubleshooting: Resolving the `__vector_11` / `Servo.cpp` Crash
-When compiling, you will likely encounter an error stating: `multiple definition of '__vector_11'`. 
-* **The Cause:** `__vector_11` represents the hardware **Timer 1** interrupt on the ATmega328P. The standard Arduino `<Servo.h>` library and ELEGOO's internal Infrared (IR) routine both demand exclusive hardware control over Timer 1.
-* **The Fix:** Follow either option below inside the codebase before clicking Compile:
+### ⚠️ Critical Environment Note: FastLED Library Dependency
+To compile the original code without dependency errors, **do not** download the newest FastLED release via the Library Manager. Instead, use the exact legacy FastLED library files included directly in ELEGOO's original source code software package folder. 
 
-#### Option A: Switch to `ServoTimer2` (Retains IR Control)
-1. Go to **Sketch -> Include Library -> Manage Libraries...** and search for **ServoTimer2**. Install it.
-2. Open the main `.ino` file tab.
-3. Change the line `#include <Servo.h>` to `#include <ServoTimer2.h>`. This reassigns the servo PWM loops to Timer 2, freeing Timer 1 entirely for the IR system.
-
-#### Option B: Disable Infrared Routine (Recommended if piloting via Mobile App)
-If the project task relies on the Bluetooth/Wi-Fi App interface and doesn't require the plastic hand-held IR remote control:
-1. Open the project tab configuration file handling inputs (e.g., `ApplicationFunctionSet_xxx.cpp`).
-2. Locate the line initializing the IR receiver: `IrReceiver.begin(IR_RECEIVE_PIN);` or `Rrecv.enableIRIn();`.
-3. Comment it out using two forward slashes: 
-   ```cpp
-   // IrReceiver.begin(IR_RECEIVE_PIN);
-   ```
-4. Save and click **Upload**.
+If compilation fails due to an external library conflict, ensure your local workspace directories are cleanly using the source folder's bundled assets rather than modern global package overrides.
 
 ---
 
